@@ -1,11 +1,13 @@
 import Post from '@/components/Post';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function HomeScreen() {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [posts, setPosts] = useState([
     {
       title: 'Mitt første innlegg',
@@ -35,18 +37,39 @@ export default function HomeScreen() {
   return (
     <View style={styles.mainContainer}>
       <Modal
-        visible
+        visible={isModalVisible}
         style={styles.modalContainer}
+        animationType='slide'
       >
         <View style={styles.modalContainer}>
-          <Pressable onPress={() => console.log('Knapp klikket')}>
-            <Text>Knapp?</Text>
+          <Text style={styles.modalTitle}>Legg til nytt innlegg</Text>
+          <Text style={styles.modalDescription}>Tittel</Text>
+          <TextInput 
+            placeholder='Tittel' 
+            style={styles.input}
+            value={title}
+            onChangeText={setTitle}
+          />
+
+          <Text style={styles.modalDescription}>Innhold</Text>
+          <TextInput 
+            placeholder='Innhold' 
+            style={styles.input}
+            value={description}
+            onChangeText={setDescription}
+          />
+          <Pressable style={styles.saveButton} onPress={() => {
+            setIsModalVisible(false);
+            setPosts([...posts, {title: title, description: description}]);
+            setTitle('');
+            setDescription('');
+          }}>
+            <Text style={styles.saveButtonText}>Lagre</Text>
           </Pressable>
-          <Text>Hei</Text>
         </View>
       </Modal>
       <Stack.Screen options={{ headerRight: () => (
-        <Pressable onPress={() => console.log('Knapp klikket')}>
+        <Pressable onPress={() => {setIsModalVisible(true)}}>
           <Text>Legg til nytt innlegg</Text>
         </Pressable>
       )
@@ -56,7 +79,13 @@ export default function HomeScreen() {
         data={posts}
         ItemSeparatorComponent={() => <View style={{height: 5}}></View>}
         renderItem={( post ) => 
-          <Post postData={post.item} />
+          <Post 
+            postData={post.item} 
+            onDelete={() => {
+              const newPosts = posts.filter((_, index) => index !== post.index);
+              setPosts(newPosts);
+            }}
+          />
       }
       />
     </View>
@@ -75,4 +104,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    alignSelf: 'center',
+  },
+  modalDescription: {
+    fontSize: 16,
+    marginBottom: 0,
+    marginLeft: '10%',
+    alignSelf: 'flex-start',
+  },
+  input: {
+    width: '80%',
+    height: 40,
+    borderWidth: 1,
+    borderColor: 'gray',
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  saveButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+  },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  }
 });
