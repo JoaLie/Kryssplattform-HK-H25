@@ -1,34 +1,45 @@
-import { StyleSheet, Text, View } from 'react-native';
-
+import Post from '@/components/Post';
+import { Stack } from 'expo-router';
+import { useState } from 'react';
+import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  // TODO: import posts from post.ts, for use in the FlatList
+
   return (
-    <View>
-      <View style={styles.post}>
-        <Text style={styles.postHeader}>Mitt første innlegg</Text>
-        <View>
-          <Text style={styles.postText}>Helt vanvittig mye tekst her</Text>
-        </View>
-      </View>
+    <View style={styles.mainContainer}>
+      <Stack.Screen options={{ headerRight: () => (
+        <Pressable onPress={() => console.log('Knapp klikket')}>
+          <Text>Knapp?</Text>
+        </Pressable>
+      )
+
+      }} />
+      <Modal
+      visible
+      >
+        <Pressable onPress={() => console.log('Knapp klikket')}>
+          <Text>Knapp?</Text>
+        </Pressable>
+      </Modal>
+      <FlatList 
+        data={posts}
+        ItemSeparatorComponent={() => <View style={{height: 5}}></View>}
+        renderItem={( post ) => 
+          <Post postData={post.item} />
+      }
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  post: {
-    backgroundColor: '#d9d9d9',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-    marginHorizontal: 8,
-  },
-  postText: {
-    fontSize: 16,
-    color: '#000',
-  },
-  postHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
+  mainContainer: {
+    flex: 1, // Dekker hele skjermen
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 16,
+    paddingTop: 12,
   },
 });
