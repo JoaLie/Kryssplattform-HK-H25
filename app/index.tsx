@@ -1,13 +1,12 @@
 import Post from '@/components/Post';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  // TODO: import posts from post.ts, for use in the FlatList
-  const posts = [
+  const [posts, setPosts] = useState([
     {
       title: 'Mitt første innlegg',
       description: 'Helt vanvittig mye tekst her',
@@ -31,13 +30,24 @@ export default function HomeScreen() {
       title: 'Mitt femte innlegg',
       description: 'Jeg er tom for ideer',
     },
-  ];
+  ]);
 
   return (
     <View style={styles.mainContainer}>
+      <Modal
+        visible
+        style={styles.modalContainer}
+      >
+        <View style={styles.modalContainer}>
+          <Pressable onPress={() => console.log('Knapp klikket')}>
+            <Text>Knapp?</Text>
+          </Pressable>
+          <Text>Hei</Text>
+        </View>
+      </Modal>
       <Stack.Screen options={{ headerRight: () => (
         <Pressable onPress={() => console.log('Knapp klikket')}>
-          <Text>Knapp?</Text>
+          <Text>Legg til nytt innlegg</Text>
         </Pressable>
       )
 
@@ -59,5 +69,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     paddingHorizontal: 16,
     paddingTop: 12,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
