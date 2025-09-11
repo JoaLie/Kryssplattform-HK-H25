@@ -8,7 +8,7 @@ export type PostProps = {
 
 export default function Post({ postData }: PostProps) {
   return (
-    <Pressable onPress={() => router.push("/post-detail")}>
+    <Pressable onPress={() => router.push(`/post-details/${postData.id}`)}>
       <View style={styles.post}>
         <Text style={styles.postTitle}>{postData.title}</Text>
         <View style={styles.postDescriptionContainer}>

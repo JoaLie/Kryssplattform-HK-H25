@@ -49,6 +49,7 @@ export default function PostFormModal({
             style={[styles.button, { borderWidth: 2, borderColor: "gray" }]}
             onPress={() => {
               const newPost: PostData = {
+                id: titleText + descText,
                 title: titleText,
                 description: descText,
               };
