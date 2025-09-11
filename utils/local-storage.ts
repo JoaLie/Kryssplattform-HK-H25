@@ -38,3 +38,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
         console.log("Feil med storeData()" + e);
     }
   }
+
+  export async function getPostByLocalId(id: string) {
+    try {
+        const data = await AsyncStorage.getItem("postStore");
+        if (data !== null) {
+          const posts: PostData[] = JSON.parse(data);
+          return posts.find(post => post.id === id);
+        }
+    } catch (e) {
+      console.log("Feil med getPostByIdLocal()", e)
+    }
+  }

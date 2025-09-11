@@ -33,6 +33,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
         <Stack.Screen name="post-details" />
         <Stack.Screen name="declarations" />
+        <Stack.Screen name="post-details/[id]" />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
