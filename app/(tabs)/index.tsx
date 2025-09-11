@@ -1,6 +1,8 @@
 import Post from '@/components/Post';
+import { PostData } from '@/types/post';
+import { getData, storeData } from '@/utils/local-storage';
 import { Stack } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function HomeScreen() {
@@ -34,6 +36,23 @@ export default function HomeScreen() {
     },
   ]);
 
+  async function createPostLocal(newPost: PostData) {
+    const updatedPostList = [...posts, newPost];
+    storeData("postStore", JSON.stringify(updatedPostList));
+    setPosts(updatedPostList);
+  }
+
+  async function getPostsFromLocal() {
+    const existingPosts = await getData("postStore");
+    if (existingPosts) {
+      setPosts(JSON.parse(existingPosts));
+    }
+  }
+
+  useEffect(() => {
+    getPostsFromLocal();
+  }, []);
+
   return (
     <View style={styles.mainContainer}>
       <Modal
@@ -60,7 +79,7 @@ export default function HomeScreen() {
           />
           <Pressable style={styles.saveButton} onPress={() => {
             setIsModalVisible(false);
-            setPosts([...posts, {title: title, description: description}]);
+            createPostLocal({title: title, description: description});
             setTitle('');
             setDescription('');
           }}>
@@ -69,7 +88,8 @@ export default function HomeScreen() {
         </View>
       </Modal>
       <Stack.Screen options={{ headerRight: () => (
-        <Pressable onPress={() => {setIsModalVisible(true)}}>
+        <Pressable onPress={() => {setIsModalVisible(true)}
+        }>
           <Text>Legg til nytt innlegg</Text>
         </Pressable>
       )

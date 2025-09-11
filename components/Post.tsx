@@ -1,4 +1,5 @@
 import { PostData } from "@/types/post";
+import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export type PostProps = {
@@ -8,7 +9,8 @@ export type PostProps = {
 
 export default function Post({ postData, onDelete }: PostProps) {
     return (
-        <View style={styles.post}>
+        <Pressable onPress={() => {router.push(`/post-detail`)}}>
+          <View style={styles.post}>
             <View style={styles.postContent}>
                 <Text style={styles.postHeader}>{postData.title}</Text>
                 <Text style={styles.postText}>{postData.description}</Text>
@@ -17,6 +19,7 @@ export default function Post({ postData, onDelete }: PostProps) {
                 <Text style={styles.deleteIcon}>🗑️</Text>
             </Pressable>
         </View>
+        </Pressable>
     );
 }
 
