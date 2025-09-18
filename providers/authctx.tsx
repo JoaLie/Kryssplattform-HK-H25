@@ -1,4 +1,5 @@
 import { getCurrentUser, loginUser, registerUser, setCurrentUser } from "@/utils/local-storage";
+import { useRouter } from "expo-router";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 type AuthContextType = {
@@ -23,6 +24,8 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     const [userSession, setUserSession] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const router = useRouter();
+    
     useEffect(() => {
         getCurrentUser().then((user) => {
             if (user) {
@@ -38,6 +41,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
             if (user) {
                 await setCurrentUser(user);
                 setUserSession(user.username);
+                router.replace("/");
                 return true;
             }
             return false;
