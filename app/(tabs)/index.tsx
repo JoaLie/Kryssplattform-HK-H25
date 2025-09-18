@@ -2,14 +2,16 @@ import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import Post from "@/components/Post";
 import PostFormModal from "@/components/PostFormModal";
+import { useAuthSession } from "@/providers/authctx";
 import { PostData } from "@/types/post";
 import { getData, storeData } from "@/utils/local-storage";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import { useEffect, useState } from "react";
 
 export default function HomeScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [posts, setPosts] = useState<PostData[]>([]);
+  const { userNameSession, isLoading } = useAuthSession();
 
   async function createPostLocal(newPost: PostData) {
     const updatedPostList = [...posts, newPost];
@@ -28,10 +30,29 @@ export default function HomeScreen() {
     getPostsFromLocal();
   }, []);
 
+  useEffect(() => {
+    if (!isLoading && !userNameSession) {
+      router.replace("/authentication");
+    }
+  }, [isLoading, userNameSession]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Laster...</Text>
+      </View>
+    );
+  }
+
+  if (!userNameSession) {
+    return null;
+  }
+
   return (
     <View style={styles.mainContainer}>
       <Stack.Screen
         options={{
+          title: `Hei ${userNameSession}`,
           headerRight: () => (
             <Pressable
               onPress={() => {
@@ -63,6 +84,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 12,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   post: {
     backgroundColor: "white",
