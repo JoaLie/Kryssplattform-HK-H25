@@ -56,6 +56,12 @@ export default function HomeScreen() {
           headerRight: () => (
             <Pressable
               onPress={() => {
+                if (!userNameSession) {
+                  console.log(
+                    "Du må være logget inn for å gjøre denne handlingen"
+                  );
+                  return;
+                }
                 setIsModalVisible(true);
               }}
             >

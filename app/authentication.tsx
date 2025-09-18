@@ -1,176 +1,131 @@
 import { useAuthSession } from "@/providers/authctx";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-export default function AuthenticationPage() {
-  const [userNameText, setUserNameText] = useState("");
-  const [passwordText, setPasswordText] = useState("");
-  const [emailText, setEmailText] = useState("");
-  const [isLoginMode, setIsLoginMode] = useState(true);
-  
-  const { signIn, signUp } = useAuthSession();
-  const [errorMessage, setErrorMessage] = useState("");
+const Authentication = () => {
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleAuthAction = async () => {
-    setErrorMessage("");
-    
-    if (isLoginMode) {
-      if (userNameText.trim() && passwordText.trim()) {
-        const success = await signIn(userNameText, passwordText);
-        if (success) {
-          setUserNameText("");
-          setPasswordText("");
-        } else {
-          setErrorMessage("Feil brukernavn eller passord");
-        }
-      } else {
-        setErrorMessage("Vennligst fyll ut alle felt");
-      }
-    } else {
-      if (userNameText.trim() && passwordText.trim() && emailText.trim()) {
-        const success = await signUp(userNameText, passwordText, emailText);
-        if (success) {
-          setUserNameText("");
-          setPasswordText("");
-          setEmailText("");
-        } else {
-          setErrorMessage("Brukernavn eller e-post eksisterer allerede");
-        }
-      } else {
-        setErrorMessage("Vennligst fyll ut alle felt");
-      }
-    }
-  };
+  const [isSignUp, setIsSignUp] = useState(false);
 
-  const toggleMode = () => {
-    setIsLoginMode(!isLoginMode);
-    setUserNameText("");
-    setPasswordText("");
-    setEmailText("");
-    setErrorMessage("");
-  };
+  const { signIn } = useAuthSession();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {isLoginMode ? "Logg inn" : "Registrer deg"}
-      </Text>
-      
-      <View style={styles.formContainer}>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Brukernavn"
-          value={userNameText}
-          onChangeText={setUserNameText}
-        />
-        
-        <TextInput
-          style={styles.textInput}
-          placeholder="Passord"
-          value={passwordText}
-          onChangeText={setPasswordText}
-          secureTextEntry={true}
-        />
-        
-        {!isLoginMode && (
-          <TextInput
-            style={styles.textInput}
-            placeholder="E-post"
-            value={emailText}
-            onChangeText={setEmailText}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <View style={styles.mainContainer}>
+        {isSignUp && (
+          <View style={styles.textFieldContainer}>
+            <Text>Epost</Text>
+            <TextInput
+              value={userEmail}
+              onChangeText={setUserEmail}
+              style={styles.textField}
+              placeholder="Epost"
+            />
+          </View>
         )}
-      </View>
-
-      {errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
-      ) : null}
-
-      <View style={styles.buttonContainer}>
+        <View style={styles.textFieldContainer}>
+          <Text>Brukernavn</Text>
+          <TextInput
+            value={userName}
+            onChangeText={setUserName}
+            style={styles.textField}
+            placeholder="Brukernavn"
+          />
+        </View>
+        <View style={styles.textFieldContainer}>
+          <Text>Passord</Text>
+          <TextInput
+            value={password}
+            secureTextEntry={true}
+            onChangeText={setPassword}
+            style={styles.textField}
+            placeholder="Passord"
+          />
+        </View>
         <Pressable
-          style={[styles.authButton, styles.primaryButton]}
-          onPress={handleAuthAction}
+          style={{
+            paddingTop: 24,
+          }}
+          onPress={() => {
+            setIsSignUp(!isSignUp);
+          }}
         >
-          <Text style={styles.primaryButtonText}>
-            {isLoginMode ? "Logg inn" : "Registrer bruker"}
+          <Text
+            style={{
+              textDecorationLine: "underline",
+            }}
+          >
+            {isSignUp ? "Registrering" : "Innlogging"}
           </Text>
         </Pressable>
-        
-        <Pressable
-          style={[styles.authButton, styles.secondaryButton]}
-          onPress={toggleMode}
-        >
-          <Text style={styles.secondaryButtonText}>
-            {isLoginMode ? "Har du ikke konto? Registrer deg" : "Har du allerede konto? Logg inn"}
-          </Text>
-        </Pressable>
+        <View style={styles.buttonContainer}>
+          <Pressable
+            style={styles.primaryButton}
+            onPress={() => {
+              signIn(userName);
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+              }}
+            >
+              {isSignUp ? "Lag bruker" : "Logg inn"}
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
-}
+};
+
+export default Authentication;
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    backgroundColor: "#f5f5f5",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 40,
-    color: "#333",
-  },
-  formContainer: {
     width: "100%",
-    marginBottom: 30,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    marginBottom: 16,
-    backgroundColor: "white",
   },
   buttonContainer: {
     width: "100%",
-    gap: 12,
-  },
-  authButton: {
-    borderRadius: 8,
-    paddingVertical: 14,
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
-    alignItems: "center",
+    paddingTop: 32,
   },
   primaryButton: {
-    backgroundColor: "#007AFF",
-  },
-  primaryButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 4,
+    backgroundColor: "#0096C7",
   },
   secondaryButton: {
-    backgroundColor: "transparent",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 4,
     borderWidth: 1,
-    borderColor: "#007AFF",
+    borderColor: "gray",
   },
-  secondaryButtonText: {
-    color: "#007AFF",
-    fontSize: 14,
-    fontWeight: "500",
+  textFieldContainer: {
+    width: "100%",
+    paddingTop: 16,
   },
-  errorText: {
-    color: "#FF3B30",
-    fontSize: 14,
-    textAlign: "center",
-    marginBottom: 16,
+  textField: {
+    borderWidth: 1,
+    padding: 10,
+    marginTop: 2,
+    borderColor: "gray",
+    borderRadius: 5,
   },
 });
