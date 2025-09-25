@@ -5,8 +5,8 @@ import PostFormModal from "@/components/PostFormModal";
 import { useAuthSession } from "@/providers/authctx";
 import { PostData } from "@/types/post";
 import { getData, storeData } from "@/utils/local-storage";
-import { Stack, router } from "expo-router";
-import { useEffect, useState } from "react";
+import { Stack, router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 
 export default function HomeScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -19,16 +19,29 @@ export default function HomeScreen() {
     setPosts(updatedPostList);
   }
 
+  async function deletePost(postId: string) {
+    const updatedPostList = posts.filter(post => post.id !== postId);
+    storeData("postStore", JSON.stringify(updatedPostList));
+    setPosts(updatedPostList);
+  }
+
   async function getPostsFromLocal() {
-    const exisitngPosts = await getData("postStore");
-    if (exisitngPosts) {
-      setPosts(JSON.parse(exisitngPosts));
+    const existingPosts = await getData("postStore");
+    if (existingPosts) {
+      setPosts(JSON.parse(existingPosts));
     }
   }
 
   useEffect(() => {
     getPostsFromLocal();
   }, []);
+
+  // Refresh posts when screen comes into focus (e.g., returning from post details)
+  useFocusEffect(
+    useCallback(() => {
+      getPostsFromLocal();
+    }, [])
+  );
 
   useEffect(() => {
     if (!isLoading && !userNameSession) {
@@ -79,7 +92,7 @@ export default function HomeScreen() {
       <FlatList
         data={posts}
         ItemSeparatorComponent={() => <View style={{ height: 12 }}></View>}
-        renderItem={(post) => <Post postData={post.item} />}
+        renderItem={(post) => <Post postData={post.item} onDelete={deletePost} />}
       />
     </View>
   );

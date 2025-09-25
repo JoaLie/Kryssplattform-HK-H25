@@ -12,6 +12,7 @@ export default function TabBar() {
         name="index"
         options={{
           title: "Hjem",
+          headerShown: true,
           tabBarIcon: ({ color }) => (
             <AntDesign name="home" size={24} color={color} />
           ),

@@ -77,15 +77,20 @@ export default function PostFormModal({
           <Pressable
             style={[styles.button, { borderWidth: 2, borderColor: "gray" }]}
             onPress={() => {
+              console.log("Creating post with image:", image);
               const newPost: PostData = {
-                id: titleText + descText,
+                id: Date.now().toString(),
                 title: titleText,
                 description: descText,
+                imageUri: image && image.trim() !== "" ? image : undefined,
+                comments: [],
               };
+              console.log("New post created:", newPost);
               // Huske å fjerne innholdet i tekstinput så vi får en ny start neste gang vi vil lage et innlegg
               addPost(newPost);
               setTitleText("");
               setDescText("");
+              setImage(null);
               setIsVisible(false);
             }}
           >
